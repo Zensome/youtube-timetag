@@ -11,7 +11,7 @@ body {
 	font-size: 1.25rem;
 	font-weight: bold;
 	text-align: center;
-	color: red;
+	color: #db1f48;
 }
 
 .textbox {
@@ -42,9 +42,9 @@ header {
 }
 
 .description {
-	/* text to the left */
 	text-align: center;
-	color: rgb(96, 96, 96);
+	color: #004369;
+	margin-right: 0.5rem;
 }
 
 .header-icon {
@@ -53,25 +53,28 @@ header {
 }
 
 .bookmarks {
-	/* margin: 5px 5px; */
 	padding: 3px;
 }
 
 .bookmark {
 	display: flex;
-	/* border: 2px solid rgb(187, 187, 187); */
-	border: 2px solid rgb(255, 65, 65);
 	border-radius: 0.5rem;
-	background-color: #e3e3e3;
-	padding: 2px;
-	margin-bottom: 0.25rem;
+	background-color: #e5ddc8;
+	margin-bottom: 0.5rem;
 	align-items: center;
 	justify-content: center;
 	transition: all 0.2s ease-in-out;
 }
 
+.bookmark-content {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	margin-left: 1rem;
+}
+
 .bookmark:hover {
-	background-color: rgb(198, 231, 255);
+	background-color: #e5ddc8d0;
 	color: #fff;
 }
 
@@ -79,11 +82,12 @@ header {
 	margin: 0.25rem;
 	color: rgb(97, 97, 97);
 	font-weight: bold;
+	flex-grow: 1;
 }
 
 .bookmark-title {
 	padding-left: 2px;
-	color: #287abc;
+	color: #01949a;
 }
 
 .bookmark-controls img {
@@ -96,6 +100,7 @@ header {
 .bookmark-controls {
 	flex: auto;
 	text-align: right;
+	margin-right: 0.5rem;
 }
 
 .bookmark-section {
@@ -104,7 +109,9 @@ header {
 }
 .bookmark-thumbnail {
 	border-radius: 0.5rem;
-	border: 2px solid gray;
+	border: 2px solid white;
+	margin-top: 0.25rem;
+	margin-bottom: 0.25rem;
 }
 
 .bookmark-btn {

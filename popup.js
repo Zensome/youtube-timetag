@@ -1,90 +1,92 @@
-//adding a new bookmark row to the popup
-const addNewBookmark = (bookmarks, bookmark) => {
-	/*one element for title and second element for whole bookmarks that contain the play, delete buttons*/
+const createBookmarkElement = (bookmark) => {
+	const bookmarkElement = document.createElement("div");
+	bookmarkElement.className = "bookmark";
+	bookmarkElement.setAttribute("timestamp", bookmark.time);
+	bookmarkElement.setAttribute("videoId", bookmark.videoId);
+
+	const bookmarkContentElement = document.createElement("div");
+	bookmarkContentElement.className = "bookmark-content";
+
+	const thumbnailElement = document.createElement("img");
+	thumbnailElement.className = "bookmark-thumbnail";
+	thumbnailElement.src = `https://img.youtube.com/vi/${bookmark.videoId}/default.jpg`;
+
+	const videoTitleElement = document.createElement("div");
+	videoTitleElement.className = "bookmark-video-title";
+	videoTitleElement.textContent = bookmark.title;
+
 	const bookmarkTitleElement = document.createElement("div");
-	const newBookmarkElement = document.createElement("div");
-	const bookmarkVideoElement = document.createElement("div"); // Create a new element to display the video title
-	const bookmarkThumbnailElement = document.createElement("img"); // Create a new img element for the thumbnail
-
-	//add bookmark controls (play button)
-	const controlsElement = document.createElement("div");
-
-	//hold all buttons element
-	bookmarkTitleElement.textContent = bookmark.desc;
-	bookmarkVideoElement.textContent = bookmark.title; // Set the video title
-	bookmarkThumbnailElement.src = `https://img.youtube.com/vi/${bookmark.videoId}/default.jpg`; // Set the thumbnail source
-	bookmarkThumbnailElement.className = "bookmark-thumbnail"; // Add a class name for potential styling
-	bookmarkVideoElement.className = "bookmark-video-title"; // Add a class name for potential styling
 	bookmarkTitleElement.className = "bookmark-title";
-	//bookmark styling
+	bookmarkTitleElement.textContent = bookmark.desc;
+
+	const controlsElement = document.createElement("div");
 	controlsElement.className = "bookmark-controls";
 
-	//set bookmarks attribute element
-	setBookmarkAttributes("play", onPlay, controlsElement);
-	setBookmarkAttributes("delete", onDelete, controlsElement);
+	const playButtonElement = createControlButton("play", onPlay);
+	const deleteButtonElement = createControlButton("delete", onDelete);
 
-	newBookmarkElement.id =
-		"bookmark-" + bookmark.videoId + "-" + bookmark.time;
+	controlsElement.appendChild(playButtonElement);
+	controlsElement.appendChild(deleteButtonElement);
 
-	newBookmarkElement.className = "bookmark";
-	newBookmarkElement.setAttribute("timestamp", bookmark.time);
-	newBookmarkElement.setAttribute("videoId", bookmark.videoId); // Add the video id to the bookmark
+	bookmarkElement.appendChild(bookmarkContentElement);
 
-	//append bookmarks element
-	newBookmarkElement.appendChild(bookmarkThumbnailElement); // Append the thumbnail before the video title
-	newBookmarkElement.appendChild(bookmarkVideoElement);
-	newBookmarkElement.appendChild(bookmarkTitleElement);
-	newBookmarkElement.appendChild(controlsElement);
+	bookmarkElement.appendChild(thumbnailElement);
+	bookmarkContentElement.appendChild(videoTitleElement);
+	bookmarkContentElement.appendChild(bookmarkTitleElement);
+	bookmarkElement.appendChild(controlsElement);
 
-	bookmarks.appendChild(newBookmarkElement);
+	return bookmarkElement;
 };
 
-const viewBookmarks = (currentBookmarks = []) => {
+const createControlButton = (src, eventListener) => {
+	const buttonElement = document.createElement("img");
+	buttonElement.src = `assets/${src}.png`;
+	buttonElement.title = src;
+	buttonElement.style = "height:20px; width:20px; cursor:pointer;";
+	buttonElement.addEventListener("click", eventListener);
+	return buttonElement;
+};
+
+const renderBookmarks = (bookmarks) => {
 	const bookmarksElement = document.getElementById("bookmarks");
 	bookmarksElement.innerHTML = "";
 
-	if (currentBookmarks.length > 0) {
-		for (let i = 0; i < currentBookmarks.length; i++) {
-			const bookmark = currentBookmarks[i];
-			addNewBookmark(bookmarksElement, bookmark);
-		}
+	if (bookmarks.length > 0) {
+		bookmarks.forEach((bookmark) => {
+			const bookmarkElement = createBookmarkElement(bookmark);
+			bookmarksElement.appendChild(bookmarkElement);
+		});
 	} else {
-		/*if there is no bookmarks to show meaning currentBookmarks is empty*/
 		bookmarksElement.innerHTML =
 			"<p class='description'>There's no time tag to show</p>";
 	}
-
-	return;
 };
 
-const onPlay = async (e) => {
-	const bookmarkTime =
-		e.target.parentNode.parentNode.getAttribute("timestamp");
-	const videoId = e.target.parentNode.parentNode.getAttribute("videoId");
+const onPlay = (e) => {
+	const bookmarkTime = e.target
+		.closest(".bookmark")
+		.getAttribute("timestamp");
+	const videoId = e.target.closest(".bookmark").getAttribute("videoId");
 
 	if (videoId) {
-		// Open the YouTube video with the appropriate timestamp.
 		const videoURL = `https://www.youtube.com/watch?v=${videoId}&t=${Math.floor(
 			bookmarkTime
 		)}s`;
-
 		chrome.tabs.create({ url: videoURL });
 	} else {
 		alert("This bookmark is not a valid YouTube video bookmark.");
 	}
 };
 
-const onDelete = async (e) => {
-	const bookmarkTime =
-		e.target.parentNode.parentNode.getAttribute("timestamp");
-	const videoId = e.target.parentNode.parentNode.getAttribute("videoId");
-	const bookmarkElementToDelete = document.getElementById(
-		"bookmark-" + videoId + "-" + bookmarkTime
-	);
+const onDelete = (e) => {
+	const bookmarkTime = e.target
+		.closest(".bookmark")
+		.getAttribute("timestamp");
+	const videoId = e.target.closest(".bookmark").getAttribute("videoId");
+	const bookmarkElementToDelete = e.target.closest(".bookmark");
 
-	bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete);
+	bookmarkElementToDelete.remove();
 
-	// Fetch all bookmarks, remove the deleted one, and store the updated list
 	chrome.storage.sync.get(["allBookmarks"], (data) => {
 		let allBookmarks = data["allBookmarks"]
 			? JSON.parse(data["allBookmarks"])
@@ -92,28 +94,15 @@ const onDelete = async (e) => {
 		allBookmarks = allBookmarks.filter(
 			(b) => !(b.videoId === videoId && b.time == bookmarkTime)
 		);
-		chrome.storage.sync.set({
-			allBookmarks: JSON.stringify(allBookmarks),
-		});
+		chrome.storage.sync.set({ allBookmarks: JSON.stringify(allBookmarks) });
 	});
 };
 
-const setBookmarkAttributes = (src, eventListener, controlParentElement) => {
-	const controlElement = document.createElement("img");
-
-	controlElement.src = "assets/" + src + ".png";
-	//play.png
-	controlElement.title = src;
-	controlElement.addEventListener("click", eventListener);
-	controlParentElement.appendChild(controlElement);
-};
-
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 	chrome.storage.sync.get(["allBookmarks"], (data) => {
 		const allBookmarks = data["allBookmarks"]
 			? JSON.parse(data["allBookmarks"])
 			: [];
-		// Call viewBookmarks function with all bookmarks
-		viewBookmarks(allBookmarks);
+		renderBookmarks(allBookmarks);
 	});
 });

@@ -1,14 +1,29 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-	if (
-		changeInfo?.status === "complete" &&
-		tab?.url.includes("youtube.com/watch")
-	) {
-		const queryParameters = tab.url.split("?")[1];
-		const urlParameters = new URLSearchParams(queryParameters);
+const YOUTUBE_WATCH_URL = "youtube.com/watch";
 
-		chrome.tabs.sendMessage(tabId, {
-			type: "NEW",
-			videoId: urlParameters.get("v"),
-		});
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	if (isTabLoaded(tab) && isYoutubeWatchURL(tab)) {
+		const videoId = getVideoIdFromTabURL(tab);
+		sendMessageToTab(tabId, "NEW", videoId);
 	}
 });
+
+function isTabLoaded(tab) {
+	return tab?.status === "complete";
+}
+
+function isYoutubeWatchURL(tab) {
+	return tab?.url.includes(YOUTUBE_WATCH_URL);
+}
+
+function getVideoIdFromTabURL(tab) {
+	const queryParameters = tab.url.split("?")[1];
+	const urlParameters = new URLSearchParams(queryParameters);
+	return urlParameters.get("v");
+}
+
+function sendMessageToTab(tabId, type, videoId) {
+	chrome.tabs.sendMessage(tabId, {
+		type,
+		videoId,
+	});
+}

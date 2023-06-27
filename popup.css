@@ -59,8 +59,9 @@ header {
 
 .bookmark {
 	display: flex;
-	border: 2px solid rgb(187, 187, 187);
-	border-radius: 0.25rem;
+	/* border: 2px solid rgb(187, 187, 187); */
+	border: 2px solid rgb(255, 65, 65);
+	border-radius: 0.5rem;
 	background-color: #e3e3e3;
 	padding: 2px;
 	margin-bottom: 0.25rem;
@@ -102,7 +103,8 @@ header {
 	flex-direction: column;
 }
 .bookmark-thumbnail {
-	border-radius: 0.25rem;
+	border-radius: 0.5rem;
+	border: 2px solid gray;
 }
 
 .bookmark-btn {

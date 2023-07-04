@@ -30,7 +30,7 @@ const createBookmarkBtn = () => {
 	const bookmarkBtn = document.createElement("img");
 	bookmarkBtn.src = chrome.runtime.getURL("assets/timetag.png");
 	bookmarkBtn.className = `${YTP_CHROME_CONTROLS_CLASS} ${BOOKMARK_BTN_CLASS}`;
-	bookmarkBtn.title = "Click to bookmark current timestamp";
+	bookmarkBtn.title = "Click to add a time tag";
 	bookmarkBtn.style = "height:30px; width:30px; margin:auto; cursor:pointer;";
 	return bookmarkBtn;
 };
@@ -43,11 +43,27 @@ const setupYoutubeControlsAndPlayer = () => {
 	youtubePlayer = document.getElementsByClassName(VIDEO_STREAM_CLASS)[0];
 };
 
+// const newVideoLoaded = async () => {
+// 	const bookmarkBtnExists =
+// 		document.getElementsByClassName(BOOKMARK_BTN_CLASS)[0];
+// 	setupYoutubeControlsAndPlayer();
+// 	currentVideoBookmarks = await fetchBookmarks();
+// 	if (!bookmarkBtnExists && youtubeControls) {
+// 		const bookmarkBtn = createBookmarkBtn();
+// 		youtubeControls.appendChild(bookmarkBtn);
+// 		bookmarkBtn.addEventListener("click", addNewBookmarkEventHandler);
+// 	}
+// };
+
 const newVideoLoaded = async () => {
-	const bookmarkBtnExists =
-		document.getElementsByClassName(BOOKMARK_BTN_CLASS)[0];
 	setupYoutubeControlsAndPlayer();
 	currentVideoBookmarks = await fetchBookmarks();
+
+	// Check if the bookmark button exists after setting up youtubeControls
+	const bookmarkBtnExists = youtubeControls.querySelector(
+		`.${BOOKMARK_BTN_CLASS}`
+	);
+
 	if (!bookmarkBtnExists && youtubeControls) {
 		const bookmarkBtn = createBookmarkBtn();
 		youtubeControls.appendChild(bookmarkBtn);
@@ -72,7 +88,7 @@ const addNewBookmarkEventHandler = async () => {
 	showMessage(
 		"Video time tag added!",
 		4000,
-		`position: fixed; z-index: 1000; background-color: #4CAF50; border-radius: 0.5rem; color: white; padding: 15px; bottom: 30px; right: 30px; transition: opacity 1s; opacity: 1;`
+		`font-size: 1.5rem; position: fixed; z-index: 1000; background-color: #4CAF50; border-radius: 0.5rem; color: white; padding: 15px; bottom: 30px; right: 30px; transition: opacity 1s; opacity: 1;`
 	);
 };
 

@@ -1,6 +1,6 @@
 {
 	"name": "Youtube TimeTag",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Mark your favorite YouTube timestamps. Get back to them anytime, anywhere.",
 	"permissions": ["storage", "tabs"],
 	"background": {

@@ -13,7 +13,10 @@ const createBookmarkElement = (bookmark) => {
 
 	const videoTitleElement = document.createElement("div");
 	videoTitleElement.className = "bookmark-video-title";
-	videoTitleElement.textContent = bookmark.title;
+	// title would be like "How To Think Like A Programmer - YouTube", always strip
+	// out the " - YouTube" part
+	const videoTitle = bookmark.title.replace(" - YouTube", "");
+	videoTitleElement.textContent = videoTitle;
 
 	const bookmarkTitleElement = document.createElement("div");
 	bookmarkTitleElement.className = "bookmark-title";

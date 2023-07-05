@@ -87,7 +87,7 @@ const addNewBookmarkEventHandler = async () => {
 	});
 	showMessage(
 		"Video time tag added!",
-		4000,
+		2000,
 		`font-size: 1.5rem; position: fixed; z-index: 1000; background-color: #4CAF50; border-radius: 0.5rem; color: white; padding: 15px; bottom: 30px; right: 30px; transition: opacity 1s; opacity: 1;`
 	);
 };
